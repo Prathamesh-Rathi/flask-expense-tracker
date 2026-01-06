@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Header + Add form -->
+      <div class="card shadow-card mb-4 slide-up">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h1 class="h4 mb-1">Expense Tracker</h1>
+              {% if user %}
+                <p class="text-muted mb-0">
+                  Hello {{ user.name }}, add and manage your expenses below.
+                </p>
+              {% else %}
+                <p class="text-muted mb-0">
+                  Add and manage your expenses below.
+                </p>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Add Expense form -->
+          <form method="POST" class="row g-3 mb-2">
+            <div class="col-md-3">
+              <label class="form-label">Category</label>
+              <input class="form-control form-control-sm" type="text" name="category"
+                     placeholder="Food, Travel..." required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Amount</label>
+              <input class="form-control form-control-sm" type="number" step="0.01"
+                     name="amount" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Comments</label>
+              <input class="form-control form-control-sm" type="text" name="comments"
+                     placeholder="Optional note">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <button class="btn btn-primary w-100 btn-animate" type="submit">
+                + Add
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Expenses table card -->
+      <div class="card shadow-card slide-up delay-1">
+        <div class="card-body">
+          {% if expenses %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Comments</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for e in expenses %}
+                    <tr class="row-hover">
+                      <td><span class="chip">{{ e.category }}</span></td>
+                      <td class="fw-semibold text-success">₹ {{ '%.2f'|format(e.amount) }}</td>
+                      <td>{{ e.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                      <td>{{ e.updated_at.strftime('%Y-%m-%d %H:%M') if e.updated_at else '' }}</td>
+                      <td>{{ e.comments }}</td>
+                      <td class="text-end">
+                        <!-- Edit -->
+                        <button class="btn btn-sm btn-outline-primary me-1"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editModal{{ e.id }}">
+                          Edit
+                        </button>
+
+                        <!-- Delete -->
+                        <form method="POST"
+                              action="{{ url_for('delete_expense', expense_id=e.id) }}"
+                              style="display:inline;">
+                          <button class="btn btn-sm btn-outline-danger"
+                                  type="submit"
+                                  onclick="return confirm('Delete this expense?');">
+                            Delete
+                          </button>
+                        </form>
+
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editModal{{ e.id }}" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                              <form method="POST"
+                                    action="{{ url_for('edit_expense', expense_id=e.id) }}">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Edit Expense</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                  <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <input class="form-control" type="text" name="category"
+                                           value="{{ e.category }}" required>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label class="form-label">Amount</label>
+                                    <input class="form-control" type="number" step="0.01" name="amount"
+                                           value="{{ e.amount }}" required>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label class="form-label">Comments</label>
+                                    <input class="form-control" type="text" name="comments"
+                                           value="{{ e.comments }}">
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">
+                                    Cancel
+                                  </button>
+                                  <button class="btn btn-primary btn-animate" type="submit">
+                                    Save
+                                  </button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="alert alert-info mb-0">
+              No expenses yet. Add your first expense above.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

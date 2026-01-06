@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+      <div class="card shadow-card slide-up">
+        <div class="card-body p-4">
+          <h2 class="h4 mb-3 text-center">Sign Up</h2>
+          <p class="text-muted text-center mb-4">
+            Create an account to start tracking expenses.
+          </p>
+
+          {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+          {% endif %}
+
+          <form method="POST">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input class="form-control" type="text" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input class="form-control" type="email" name="email" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input class="form-control" type="password" name="password" required>
+            </div>
+            <button class="btn btn-primary w-100 btn-animate" type="submit">
+              Create Account
+            </button>
+          </form>
+
+          <hr class="my-4">
+
+          <p class="mb-0 text-center">
+            Already have an account?
+            <a href="{{ url_for('login') }}">Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

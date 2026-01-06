@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-card slide-up">
+        <div class="card-body">
+          <h1 class="h4 mb-3">Category-wise Expense Chart</h1>
+
+          {% if user %}
+            <p class="text-muted">
+              Total amount spent per category for {{ user.name }}.
+            </p>
+          {% endif %}
+
+          {% if labels and values %}
+            <canvas id="expensesChart" height="260"></canvas>
+          {% else %}
+            <div class="alert alert-info mb-0">
+              No expenses yet to display in the chart. Add some expenses first.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if labels and values %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const ctx = document.getElementById('expensesChart').getContext('2d');
+      const labels = {{ labels | tojson }};
+      const values = {{ values | tojson }};
+
+      const colors = [
+        '#3b82f6', '#22c55e', '#f97316', '#ef4444',
+        '#8b5cf6', '#14b8a6', '#eab308', '#ec4899'
+      ];
+
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Expenses by Category',
+            data: values,
+            backgroundColor: colors.slice(0, labels.length),
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    </script>
+  {% endif %}
+{% endblock %}
